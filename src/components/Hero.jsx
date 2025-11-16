@@ -24,12 +24,12 @@ export default function Hero() {
 
   return (
     <section id="home" ref={ref} className="relative min-h-[90vh] md:min-h-screen flex items-center overflow-hidden bg-black">
-      {/* Performant static background (3D disabled by default for reliability) */}
-      <div className="absolute inset-0">
+      {/* Background: ensure it's always behind content */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="w-full h-full animated-gradient" />
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/80" />
         {/* soft grid overlay */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06),transparent_60%)] mix-blend-overlay" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06),transparent_60%)] mix-blend-overlay" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-28 w-full">
