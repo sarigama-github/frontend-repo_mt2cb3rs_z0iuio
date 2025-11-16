@@ -1,6 +1,8 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, lazy, Suspense } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-import Spline from '@splinetool/react-spline'
+
+// Lazy-load Spline to avoid hard failures if the lib or network blocks
+const Spline = lazy(() => import('@splinetool/react-spline'))
 
 export default function Hero() {
   const ref = useRef(null)
@@ -9,6 +11,8 @@ export default function Hero() {
   const titleY = useTransform(scrollYProgress, [0, 1], [0, -80])
   const titleOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.2])
   const hue = useTransform(scrollYProgress, [0, 1], [220, 150])
+
+  const [splineError, setSplineError] = useState(false)
 
   useEffect(() => {
     const onMove = (e) => {
@@ -26,7 +30,17 @@ export default function Hero() {
   return (
     <section id="home" ref={ref} className="relative min-h-[90vh] md:min-h-screen flex items-center overflow-hidden bg-black">
       <div className="absolute inset-0">
-        <Spline scene="https://prod.spline.design/FduaNp3csZktbOi3/scene.splinecode" style={{ width: '100%', height: '100%' }} />
+        {!splineError ? (
+          <Suspense fallback={<div className="w-full h-full bg-[radial-gradient(800px_500px_at_50%_20%,rgba(16,185,129,0.12),transparent_60%)]" /> }>
+            <Spline
+              scene="https://prod.spline.design/FduaNp3csZktbOi3/scene.splinecode"
+              onError={() => setSplineError(true)}
+              style={{ width: '100%', height: '100%' }}
+            />
+          </Suspense>
+        ) : (
+          <div className="w-full h-full bg-[radial-gradient(1000px_600px_at_50%_20%,rgba(16,185,129,0.10),transparent_60%)]" />
+        )}
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/80" />
       </div>
 
