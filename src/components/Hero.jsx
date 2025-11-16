@@ -1,8 +1,5 @@
-import { useEffect, useRef, useState, lazy, Suspense } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion, useScroll, useTransform } from 'framer-motion'
-
-// Lazy-load Spline to avoid hard failures if the lib or network blocks
-const Spline = lazy(() => import('@splinetool/react-spline'))
 
 export default function Hero() {
   const ref = useRef(null)
@@ -11,8 +8,6 @@ export default function Hero() {
   const titleY = useTransform(scrollYProgress, [0, 1], [0, -80])
   const titleOpacity = useTransform(scrollYProgress, [0, 1], [1, 0.2])
   const hue = useTransform(scrollYProgress, [0, 1], [220, 150])
-
-  const [splineError, setSplineError] = useState(false)
 
   useEffect(() => {
     const onMove = (e) => {
@@ -29,23 +24,18 @@ export default function Hero() {
 
   return (
     <section id="home" ref={ref} className="relative min-h-[90vh] md:min-h-screen flex items-center overflow-hidden bg-black">
+      {/* Performant static background (3D disabled by default for reliability) */}
       <div className="absolute inset-0">
-        {!splineError ? (
-          <Suspense fallback={<div className="w-full h-full bg-[radial-gradient(800px_500px_at_50%_20%,rgba(16,185,129,0.12),transparent_60%)]" /> }>
-            <Spline
-              scene="https://prod.spline.design/FduaNp3csZktbOi3/scene.splinecode"
-              onError={() => setSplineError(true)}
-              style={{ width: '100%', height: '100%' }}
-            />
-          </Suspense>
-        ) : (
-          <div className="w-full h-full bg-[radial-gradient(1000px_600px_at_50%_20%,rgba(16,185,129,0.10),transparent_60%)]" />
-        )}
+        <div className="w-full h-full animated-gradient" />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/80" />
+        {/* soft grid overlay */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06),transparent_60%)] mix-blend-overlay" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 py-28 w-full">
-        <motion.h1 style={{ y: titleY, opacity: titleOpacity, filter: hue.to((h) => `hue-rotate(${h}deg)`) }} className="text-4xl md:text-7xl font-semibold tracking-tight text-white">
+        <motion.h1
+          style={{ y: titleY, opacity: titleOpacity, filter: hue.to((h) => `hue-rotate(${h}deg)`) }}
+          className="text-4xl md:text-7xl font-semibold tracking-tight text-white">
           Bærekraftige byer. Futuristisk design.
         </motion.h1>
         <motion.p style={{ opacity: titleOpacity }} className="mt-6 max-w-2xl text-zinc-300">
